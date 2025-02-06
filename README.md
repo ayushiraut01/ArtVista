@@ -15,7 +15,7 @@
 - **HTML** – For structuring the website content.
 - **CSS** – For designing and styling the layout.
 
-## 📁 File Structure
+## File Structure
 ```
 Art-Vista/
 │── index.html        # Main homepage displaying art collections
@@ -28,7 +28,7 @@ Art-Vista/
 │   ├── js/           # Future JavaScript functionalities
 ```
 
-## 🚀 How to Use
+## How to Use
 1. **Clone the repository**:
    ```sh
    git clone https://github.com/ayushiraut01/ArtVista
