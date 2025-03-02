@@ -178,3 +178,246 @@
 
    </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtVista</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .chat-circle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-box {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 400px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: none;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-header {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .chat-body {
+            height: 250px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .chat-footer {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .chat-footer select,
+        input,
+        button {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .chat-footer button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .suggestion-box {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background: #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-circle" id="chatButton">💬</div>
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">Axzen</div>
+        <div class="chat-body" id="chatBody">
+            <p><strong>Axzen:</strong> Welcome to Artvista! 🚗 How can I assist you today?</p>
+        </div>
+        <div class="chat-footer">
+            <select id="brandSelect" class="hidden" onchange="selectBrand()"></select>
+            <select id="modelSelect" class="hidden" onchange="selectModel()"></select>
+            <select id="yearSelect" class="hidden" onchange="selectYear()"></select>
+            <input type="text" id="userInput" placeholder="Type a message..." onkeyup="showSuggestions(event)"
+                onkeypress="handleKeyPress(event)">
+            <div class="suggestion-box" id="suggestionBox"></div>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('chatButton').addEventListener('click', function () {
+            let chatBox = document.getElementById('chatBox');
+            chatBox.style.display = chatBox.style.display === 'none' || chatBox.style.display === '' ? 'block' : 'none';
+        });
+
+        // const carModels = {
+        //     "Toyota": ["Corolla", "Camry", "Fortuner"],
+        //     "Hyundai": ["i10", "i20", "Creta"],
+        //     "BMW": ["X1", "X3", "X5"],
+        //     "Maruti": ["Swift", "Baleno", "WagonR"],
+        //     "Skoda": ["Rapid", "Octavia", "Superb"]
+        // };
+
+        const chatbotResponses = {
+            "hello": "Hi there! 🎨 How can I assist you with art and images today?",
+"art inspiration": "Absolutely! Are you interested in a specific type of art, like digital, abstract, or classic paintings?",
+"abstract art": "Abstract art is fascinating! 😍 Would you like to explore color combinations, famous abstract artists, or maybe some techniques for creating abstract art?",
+"famous abstract artists": "Of course! Some renowned abstract artists include Wassily Kandinsky, Piet Mondrian, and Jackson Pollock.",
+"show images": "Great choice! 🎨 While I can't display images directly, I recommend exploring platforms like Pinterest or Google Images.",
+"interpret abstract art": "Abstract art is all about emotion and interpretation. Pay attention to colors, shapes, and brush strokes—there's no right or wrong answer!",
+"create abstract art": "Fantastic! Start with colors, experiment with shapes and lines, build depth by layering, and let your feelings guide your strokes.",
+"thank you": "You're welcome! 🎨 Feel free to ask anything else about art or images!",
+"goodbye": "Goodbye! Keep creating beautiful art! 🎨",
+"default": "I didn’t quite get that. Could you rephrase it?",
+"famous digital artists": "Some popular digital artists include Beeple, Loish, and Sakimichan. Their works are known for stunning details and creativity!",
+"art techniques": "There are many techniques, like blending, layering, and texture creation. Are you looking for tips on any specific technique?",
+"color theory": "Color theory is all about harmony and contrast! Complementary, analogous, and triadic schemes can enhance your art.",
+"portrait art": "Portraits capture emotions beautifully! Are you looking for tips on drawing or painting portraits?",
+"landscape art": "Nature is a wonderful inspiration! For landscapes, focus on depth, lighting, and color gradients.",
+"sketching tips": "Start with light pencil strokes, focus on shapes first, and add details gradually. Practice makes perfect! ✏️",
+"art software": "Some popular choices are Adobe Photoshop, Procreate, and Krita. Are you looking for something free or professional-grade?",
+"image editing": "You can use tools like Canva for quick edits or Photoshop for advanced editing. Need tips on a specific tool?",
+"art styles": "There are many styles like surrealism, realism, minimalism, and more. Which one interests you most?",
+"surrealism": "Surrealism is all about the bizarre and dreamlike! Artists like Salvador Dalí are masters of this style.",
+"realism": "Realism focuses on accurate depictions of subjects. It requires patience and a lot of attention to detail.",
+"minimalism": "Less is more! Minimalism focuses on simplicity and clarity with limited color palettes.",
+"art exhibitions": "You can explore virtual art exhibitions on platforms like Artsy or check out local galleries!",
+"sell art": "Online platforms like Etsy, Redbubble, and ArtStation are great for selling your art!",
+"art community": "Joining platforms like DeviantArt, Behance, or Reddit art communities can help you connect with fellow artists!",
+"art tutorials": "YouTube channels like Proko and Jazza offer amazing tutorials for both beginners and advanced artists.",
+"photo manipulation": "Photo manipulation is all about creativity! Using layers, masks, and effects can transform images.",
+"thank you": "You're welcome! 🎨 Keep exploring and creating!",
+"goodbye": "Goodbye! Wishing you endless inspiration! 🎨",
+"default": "I didn’t quite get that. Could you rephrase it?"
+
+        };
+
+        function getBotResponse(userMessage) {
+            return chatbotResponses[userMessage.toLowerCase()] || chatbotResponses["default"];
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById('userInput');
+            let userText = inputField.value.trim();
+            if (!userText) return;
+
+            let chatBody = document.getElementById('chatBody');
+            chatBody.innerHTML += `<p><strong>You:</strong> ${userText}</p>`;
+            inputField.value = "";
+
+            if (userText.toLowerCase() === "spare part") {
+                chatBody.innerHTML += `<p><strong>Axzen:</strong> ${chatbotResponses["spare part"]}</p>`;
+                showBrandSelection();
+            } else {
+                let botResponse = getBotResponse(userText);
+                setTimeout(() => {
+                    chatBody.innerHTML += `<p><strong>Axzen:</strong> ${botResponse}</p>`;
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }, 500);
+            }
+        }
+
+        function showSuggestions(event) {
+            let inputField = document.getElementById('userInput');
+            let suggestionBox = document.getElementById('suggestionBox');
+            let userText = inputField.value.toLowerCase();
+
+            suggestionBox.innerHTML = "";
+            if (!userText) return;
+
+            let suggestions = Object.keys(chatbotResponses).filter(key => key.startsWith(userText));
+
+            suggestions.forEach(suggestion => {
+                let div = document.createElement('div');
+                div.classList.add('suggestion-item');
+                div.innerText = suggestion;
+                div.onclick = function () {
+                    inputField.value = suggestion;
+                    suggestionBox.innerHTML = "";
+                };
+                suggestionBox.appendChild(div);
+            });
+        }
+
+        function showBrandSelection() {
+            let brandSelect = document.getElementById('brandSelect');
+            brandSelect.innerHTML = `<option value="">Select Brand</option>`;
+            Object.keys(carModels).forEach(brand => {
+                brandSelect.innerHTML += `<option value="${brand}">${brand}</option>`;
+            });
+            brandSelect.classList.remove('hidden');
+        }
+
+        function selectBrand() {
+            let brand = document.getElementById('brandSelect').value;
+            if (!brand) return;
+
+            let chatBody = document.getElementById('chatBody');
+            chatBody.innerHTML += `<p><strong>You:</strong> ${brand}</p>`;
+            chatBody.innerHTML += `<p><strong>Axzen:</strong> Please select your car model.</p>`;
+
+            document.getElementById('brandSelect').classList.add('hidden');
+            let modelSelect = document.getElementById('modelSelect');
+            modelSelect.innerHTML = `<option value="">Select Model</option>`;
+            carModels[brand].forEach(model => {
+                modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
+            });
+            modelSelect.classList.remove('hidden');
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') sendMessage();
+        }
+    </script>
+</body>
+
+</html>
+
